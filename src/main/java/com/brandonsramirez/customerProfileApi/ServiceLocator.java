@@ -3,7 +3,7 @@ package com.brandonsramirez.customerProfileApi;
 import javax.servlet.ServletContext;
 
 public class ServiceLocator {
-  static final String CONTEXT_ATTRIBUTE_NAME = "customerProfile.service";
+  private static final String CONTEXT_ATTRIBUTE_NAME = "customerProfile.service";
 
   @SuppressWarnings("unchecked")
   public static CustomerProfileService getCustomerProfileService(ServletContext ctx) {

@@ -1,25 +1,27 @@
 package com.brandonsramirez.customerProfileApi;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.servlet.ServletContext;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 /**
  * JAX-RS resource which acts as endpoint for the /customer resource
  */
-@Path("customer")
+@Path("/customers")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class CustomerResource {
+  @Context ServletContext context;
 
-    /**
-     * Method handling HTTP GET requests. The returned object will be sent
-     * to the client as "text/plain" media type.
-     *
-     * @return String that will be returned as a text/plain response.
-     */
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public String getIt() {
-        return "Got it!";
-    }
+  @GET
+  @Path("/{customerId}")
+  public Customer getCustomer(@PathParam("customerId") int customerId) {
+    //return ServiceLocator.getCustomerProfileService(context).getCustomerById(customerId);
+    Customer c = new Customer();
+    c.setCustomerId(1);
+    c.setFirstName("Brandon");
+    c.setLastName("Ramirez");
+    return c;
+  }
 }
