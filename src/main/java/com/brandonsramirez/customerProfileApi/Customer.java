@@ -13,6 +13,7 @@ public class Customer implements Serializable, Cloneable {
   @Getter @Setter private int customerId;
   @Getter @Setter private String firstName;
   @Getter @Setter private String lastName;
+  @Getter @Setter private String email;
 
   @Override
   public Object clone() {
@@ -20,6 +21,7 @@ public class Customer implements Serializable, Cloneable {
     clone.setCustomerId(this.getCustomerId());
     clone.setFirstName(this.getFirstName());
     clone.setLastName(this.getLastName());
+    clone.setEmail(this.getEmail());
     return clone;
   }
 }
