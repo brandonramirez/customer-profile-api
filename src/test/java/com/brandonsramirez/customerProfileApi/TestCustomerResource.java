@@ -69,9 +69,43 @@ public class TestCustomerResource {
   }
 
   @Test
+  public void validUpdatePersists() {
+    Customer revised = CommonTestUtils.makeCustomer("John", "Wayne");
+    Response res = endpoint.updateCustomer(1, revised);
+
+    assertNotNull(res);
+    assertEquals(Response.Status.NO_CONTENT.getStatusCode(), res.getStatus());
+
+    Customer persisted = service.getCustomerById(1);
+    assertEquals("John", persisted.getFirstName());
+  }
+
+  @Test
+  public void invalidateUpdateReturnsErrorCode() {
+    Customer revised = CommonTestUtils.makeCustomer("John", "");
+    Response res = endpoint.updateCustomer(1, revised);
+
+    assertNotNull(res);
+    assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), res.getStatus());
+
+    Customer persisted = service.getCustomerById(1);
+    assertNotEquals("An invalid update went through.", "John", persisted.getFirstName());
+  }
+
+  @Test
+  public void updatingNonExistentCustomerReturnsNotFoundError() {
+    Customer revised = CommonTestUtils.makeCustomer("John", "Wayne");
+    Response res = endpoint.updateCustomer(831, revised);
+
+    assertNotNull(res);
+    assertEquals(Response.Status.NOT_FOUND.getStatusCode(), res.getStatus());
+  }
+
+  @Test
   public void deleteRemovesCustomerFromPersistence() {
     Response res = endpoint.deleteCustomer(1);
     Customer customer = service.getCustomerById(1);
+
     assertNull(customer);
     assertNotNull(res);
     assertEquals(Response.Status.NO_CONTENT.getStatusCode(), res.getStatus());

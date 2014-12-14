@@ -47,6 +47,23 @@ public class CustomerResource {
     }
   }
 
+  @PUT
+  @Path("/{customerId}")
+  public Response updateCustomer(@PathParam("customerId") int customerId, Customer updatedCustomerDetails) {
+    updatedCustomerDetails.setCustomerId(customerId);
+
+    try {
+      getCustomerProfileService().updateCustomer(updatedCustomerDetails);
+      return Response.noContent().build();
+    }
+    catch (NonExistentCustomerException e) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    catch (InvalidCustomerProfileException e) {
+      return Response.status(Response.Status.BAD_REQUEST).build();
+    }
+  }
+
   @DELETE
   @Path("/{customerId}")
   public Response deleteCustomer(@PathParam("customerId") int customerId) {
