@@ -25,9 +25,9 @@ public class TestMemoryCustomerDao {
 
   @Test
   public void getCustomer() {
-    Customer c1 = makeCustomer(1, "Brandon", "Ramirez");
-    Customer c2 = makeCustomer(2, "John", "Doe");
-    Customer c3 = makeCustomer(3, "Brandon", "Ramirez");
+    Customer c1 = CommonTestUtils.makeCustomer(1, "Brandon", "Ramirez");
+    Customer c2 = CommonTestUtils.makeCustomer(2, "John", "Doe");
+    Customer c3 = CommonTestUtils.makeCustomer(3, "Brandon", "Ramirez");
 
     testCustomers.put(c1.getCustomerId(), c1);
     testCustomers.put(c2.getCustomerId(), c2);
@@ -42,7 +42,7 @@ public class TestMemoryCustomerDao {
 
   @Test
   public void createCustomer() {
-    Customer customer = makeCustomer("Brandon", "Ramirez");
+    Customer customer = CommonTestUtils.makeCustomer("Brandon", "Ramirez");
     int customerId = dao.createCustomer(customer);
 
     assertNotNull(testCustomers.get(1));
@@ -53,7 +53,7 @@ public class TestMemoryCustomerDao {
 
   @Test
   public void createDoesNotOverrideOriginalObject() {
-    Customer c = makeCustomer("John", "Doe");
+    Customer c = CommonTestUtils.makeCustomer("John", "Doe");
     int customerId = dao.createCustomer(c);
     assertNotNull(testCustomers.get(1));
     assertNotSame(1, c.getCustomerId());
@@ -61,8 +61,8 @@ public class TestMemoryCustomerDao {
 
   @Test
   public void createReturnsIncrementingIds() {
-    int firstId = dao.createCustomer(makeCustomer("Jane", "Doe"));
-    int secondId = dao.createCustomer(makeCustomer("John", "Doe"));
+    int firstId = dao.createCustomer(CommonTestUtils.makeCustomer("Jane", "Doe"));
+    int secondId = dao.createCustomer(CommonTestUtils.makeCustomer("John", "Doe"));
 
     assertNotSame("createCustomer returned the same identifier for multiple customers", firstId, secondId);
     assertEquals("2 sequentially created customers don't have id's separated by 1.", firstId + 1, secondId);
@@ -70,7 +70,7 @@ public class TestMemoryCustomerDao {
 
   @Test
   public void deleteRemovedCustomer() {
-    Customer c = makeCustomer(5, "Super", "User");
+    Customer c = CommonTestUtils.makeCustomer(5, "Super", "User");
     testCustomers.put(c.getCustomerId(), c);
 
     dao.deleteCustomer(c.getCustomerId());
@@ -80,32 +80,20 @@ public class TestMemoryCustomerDao {
 
   @Test
   public void updateModifiedCustomer() {
-    Customer test = makeCustomer(6, "Test", "User");
+    Customer test = CommonTestUtils.makeCustomer(6, "Test", "User");
     testCustomers.put(test.getCustomerId(), test);
     assertEquals("User", test.getLastName());
 
-    dao.updateCustomer(makeCustomer(test.getCustomerId(), test.getFirstName(), "Suite"));
+    dao.updateCustomer(CommonTestUtils.makeCustomer(test.getCustomerId(), test.getFirstName(), "Suite"));
     assertEquals("Change via updateCustomer did not persist.", "Suite", testCustomers.get(test.getCustomerId()).getLastName());
   }
 
   @Test
   public void updateDoesNotChangePrimaryKey() {
-    Customer test = makeCustomer(6, "Test", "User");
+    Customer test = CommonTestUtils.makeCustomer(6, "Test", "User");
     testCustomers.put(test.getCustomerId(), test);
-    dao.updateCustomer(makeCustomer(test.getCustomerId() + 3, test.getFirstName(), "Suite"));
+    dao.updateCustomer(CommonTestUtils.makeCustomer(test.getCustomerId() + 3, test.getFirstName(), "Suite"));
     assertEquals("Primary key changed!", test.getCustomerId(), testCustomers.get(test.getCustomerId()).getCustomerId());
   }
 
-  private Customer makeCustomer(int customerId, String firstName, String lastName) {
-    Customer c = makeCustomer(firstName, lastName);
-    c.setCustomerId(customerId);
-    return c;
-  }
-
-  private Customer makeCustomer(String firstName, String lastName) {
-    Customer c = new Customer();
-    c.setFirstName(firstName);
-    c.setLastName(lastName);
-    return c;
-  }
 }

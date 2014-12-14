@@ -4,6 +4,7 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * JAX-RS resource which acts as endpoint for the /customer resource
@@ -17,11 +18,12 @@ public class CustomerResource {
   @GET
   @Path("/{customerId}")
   public Customer getCustomer(@PathParam("customerId") int customerId) {
-    //return ServiceLocator.getCustomerProfileService(context).getCustomerById(customerId);
-    Customer c = new Customer();
-    c.setCustomerId(1);
-    c.setFirstName("Brandon");
-    c.setLastName("Ramirez");
-    return c;
+    Customer c = ServiceLocator.getCustomerProfileService(context).getCustomerById(customerId);
+    if (c != null) {
+      return c;
+    }
+    else {
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
+    }
   }
 }
