@@ -73,7 +73,7 @@ public class TestMemoryCustomerDao {
     Customer c = makeCustomer(5, "Super", "User");
     testCustomers.put(c.getCustomerId(), c);
 
-    dao.deleteCustomer(c);
+    dao.deleteCustomer(c.getCustomerId());
 
     assertNull("After deleting a customer, the customer object remained.", testCustomers.get(c.getCustomerId()));
   }
