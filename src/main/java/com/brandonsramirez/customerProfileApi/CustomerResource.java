@@ -26,7 +26,7 @@ public class CustomerResource {
       return Response.ok().entity(c).build();
     }
     else {
-      throw new WebApplicationException(Response.Status.NOT_FOUND);
+      return Response.status(Response.Status.NOT_FOUND).build();
     }
   }
 
@@ -72,7 +72,7 @@ public class CustomerResource {
       return Response.noContent().build();
     }
     catch (NonExistentCustomerException e) {
-      throw new WebApplicationException(Response.Status.NOT_FOUND);
+      return Response.status(Response.Status.NOT_FOUND).build();
     }
   }
 

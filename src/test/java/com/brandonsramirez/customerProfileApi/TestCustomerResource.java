@@ -34,15 +34,9 @@ public class TestCustomerResource {
   }
 
   @Test
-  public void getCustomerThrowsWebAppExceptionForNonExistentCustomer() {
-    try {
-      endpoint.getCustomer(2);
-      fail("Finding a non-existent profile should have failed.");
-    }
-    catch (WebApplicationException e) {
-      // excellent!
-      // I'd like to validate the HTTP response status is 404 here, but that doesn't seem possible to extract from the exception object.
-    }
+  public void getCustomerReturnsNotFoundStatusForNonExistentCustomer() {
+    Response res = endpoint.getCustomer(2);
+    assertEquals(Response.Status.NOT_FOUND.getStatusCode(), res.getStatus());
   }
 
   @Test
@@ -112,13 +106,9 @@ public class TestCustomerResource {
   }
 
   @Test
-  public void deleteNonExistentCustomerThrowsWebAppException() {
-    try {
-      endpoint.deleteCustomer(321);
-      fail("Able to delete a non-existent customer profile");
-    }
-    catch (WebApplicationException e) {
-      // test passes
-    }
+  public void deleteNonExistentCustomerReturnsNotFoundStatus() {
+    Response res = endpoint.deleteCustomer(321);
+    assertNotNull(res);
+    assertEquals(Response.Status.NOT_FOUND.getStatusCode(), res.getStatus());
   }
 }
