@@ -1,9 +1,6 @@
 package com.brandonsramirez.customerProfileApi;
 
-import javax.servlet.ServletContext;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import static org.junit.Assert.*;
@@ -31,11 +28,9 @@ public class TestCustomerResource {
 
   @Test
   public void getCustomerReturnsValidCustomer() {
-    Customer c = endpoint.getCustomer(1);
-    assertNotNull("Unable t find known-good customer profile.", c);
-    assertEquals(1, c.getCustomerId());
-    assertEquals("Bruce", c.getFirstName());
-    assertEquals("Wayne", c.getLastName());
+    Response res = endpoint.getCustomer(1);
+    assertNotNull("Unable to find known-good customer profile.", res);
+    assertEquals(Response.Status.OK.getStatusCode(), res.getStatus());
   }
 
   @Test
@@ -51,10 +46,35 @@ public class TestCustomerResource {
   }
 
   @Test
+  public void creatingValidCustomerPersists() {
+    Customer c = CommonTestUtils.makeCustomer("Clark", "Kent");
+    Response res = endpoint.createCustomer(c);
+
+    assertNotNull(res);
+    assertEquals(Response.Status.CREATED.getStatusCode(), res.getStatus());
+
+    Customer persisted = service.getCustomerById(2);
+    assertNotNull(persisted);
+    assertEquals("Clark", persisted.getFirstName());
+    assertEquals("Kent", persisted.getLastName());
+  }
+
+  @Test
+  public void createInvalidCustomerThrowsWebAppException() {
+    Customer c = CommonTestUtils.makeCustomer("Clark", null);
+    Response res = endpoint.createCustomer(c);
+
+    assertNotNull(res);
+    assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), res.getStatus());
+  }
+
+  @Test
   public void deleteRemovesCustomerFromPersistence() {
-    endpoint.deleteCustomer(1);
+    Response res = endpoint.deleteCustomer(1);
     Customer customer = service.getCustomerById(1);
     assertNull(customer);
+    assertNotNull(res);
+    assertEquals(Response.Status.NO_CONTENT.getStatusCode(), res.getStatus());
   }
 
   @Test

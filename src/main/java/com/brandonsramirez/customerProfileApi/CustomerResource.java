@@ -1,5 +1,8 @@
 package com.brandonsramirez.customerProfileApi;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -17,21 +20,39 @@ public class CustomerResource {
 
   @GET
   @Path("/{customerId}")
-  public Customer getCustomer(@PathParam("customerId") int customerId) {
+  public Response getCustomer(@PathParam("customerId") int customerId) {
     Customer c = getCustomerProfileService().getCustomerById(customerId);
     if (c != null) {
-      return c;
+      return Response.ok().entity(c).build();
     }
     else {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
   }
 
+  @POST
+  public Response createCustomer(Customer newCustomer) {
+    try {
+      int id = getCustomerProfileService().createCustomer(newCustomer);
+      newCustomer.setCustomerId(id);
+      try {
+        return Response.created(new URI("/customers/" + id)).entity(newCustomer).build();
+      }
+      catch (URISyntaxException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    catch (InvalidCustomerProfileException e) {
+      return Response.status(Response.Status.BAD_REQUEST).build();
+    }
+  }
+
   @DELETE
   @Path("/{customerId}")
-  public void deleteCustomer(@PathParam("customerId") int customerId) {
+  public Response deleteCustomer(@PathParam("customerId") int customerId) {
     try {
       getCustomerProfileService().deleteCustomer(customerId);
+      return Response.noContent().build();
     }
     catch (NonExistentCustomerException e) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
