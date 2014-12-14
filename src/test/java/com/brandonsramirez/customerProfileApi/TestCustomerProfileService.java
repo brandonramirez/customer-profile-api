@@ -12,19 +12,10 @@ public class TestCustomerProfileService {
 
   @Before
   public void setUp() {
-    this.service = new CustomerProfileService(new MemoryCustomerDao() {
-      // Over-ride the in-memory map with our own map so that we have some control
-      // over the underlying data store.
-      private Map<Integer, Customer> customers = new HashMap<Integer, Customer>() {{
-        put(1, CommonTestUtils.makeCustomer(1, "Brandon", "Ramirez"));
-        put(2, CommonTestUtils.makeCustomer(2, "John", "Doe"));
-      }};
-
-      @Override
-      protected Map<Integer, Customer> getCustomerMap() {
-        return customers;
-      }
-    });
+    this.service = CommonTestUtils.makeCustomerProfileService(
+      CommonTestUtils.makeCustomer(1, "Brandon", "Ramirez"),
+      CommonTestUtils.makeCustomer(2, "John", "Doe")
+    );
   }
 
   @Test

@@ -18,12 +18,31 @@ public class CustomerResource {
   @GET
   @Path("/{customerId}")
   public Customer getCustomer(@PathParam("customerId") int customerId) {
-    Customer c = ServiceLocator.getCustomerProfileService(context).getCustomerById(customerId);
+    Customer c = getCustomerProfileService().getCustomerById(customerId);
     if (c != null) {
       return c;
     }
     else {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
+  }
+
+  @DELETE
+  @Path("/{customerId}")
+  public void deleteCustomer(@PathParam("customerId") int customerId) {
+    try {
+      getCustomerProfileService().deleteCustomer(customerId);
+    }
+    catch (NonExistentCustomerException e) {
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
+    }
+  }
+
+  protected CustomerProfileService getCustomerProfileService() {
+    return getCustomerProfileService(context);
+  }
+
+  protected CustomerProfileService getCustomerProfileService(ServletContext ctx) {
+    return ServiceLocator.getCustomerProfileService(ctx);
   }
 }
