@@ -28,6 +28,7 @@ public class MemoryCustomerDao implements CustomerDao {
     if (existingCustomer != null) {
       existingCustomer.setFirstName(customer.getFirstName());
       existingCustomer.setLastName(customer.getLastName());
+      existingCustomer.setEmail(customget.getEmail());
     }
   }
 
