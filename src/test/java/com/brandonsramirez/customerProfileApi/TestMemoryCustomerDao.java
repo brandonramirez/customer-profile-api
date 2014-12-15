@@ -25,13 +25,7 @@ public class TestMemoryCustomerDao {
 
   @Test
   public void getCustomer() {
-    Customer c1 = CommonTestUtils.makeCustomer(1, "Brandon", "Ramirez");
-    Customer c2 = CommonTestUtils.makeCustomer(2, "John", "Doe");
-    Customer c3 = CommonTestUtils.makeCustomer(3, "Brandon", "Ramirez");
-
-    testCustomers.put(c1.getCustomerId(), c1);
-    testCustomers.put(c2.getCustomerId(), c2);
-    testCustomers.put(c3.getCustomerId(), c3);
+    addInitialCustomersWithDups();
 
     Customer c = dao.getCustomer(1);
     assertNotNull(c);
@@ -96,4 +90,69 @@ public class TestMemoryCustomerDao {
     assertEquals("Primary key changed!", test.getCustomerId(), testCustomers.get(test.getCustomerId()).getCustomerId());
   }
 
+  @Test
+  public void searchFindsFirstNameMatches() {
+    addInitialCustomersWithDups();
+
+    SearchResult<Customer> results = dao.findCustomers(SearchFilter.firstName("Brandon"), 0, 10);
+    assertEquals("Expected two total hits", 2, results.getTotalCount());
+    assertEquals("Expected two hits on page", 2, results.getResults().size());
+  }
+
+  @Test
+  public void searchFindsLastNameMatches() {
+    addInitialCustomersWithDups();
+
+    SearchResult<Customer> results = dao.findCustomers(SearchFilter.lastName("Ramirez"), 0, 10);
+    assertEquals("Expected two total hits", 2, results.getTotalCount());
+    assertEquals("Expected two hits on page", 2, results.getResults().size());
+  }
+
+  @Test
+  public void searchFindsEmailMatches() {
+    addInitialCustomersWithDups();
+
+    SearchResult<Customer> results = dao.findCustomers(SearchFilter.email("bsr@somefakedomain"), 0, 10);
+    assertEquals("Expected two total hits", 2, results.getTotalCount());
+    assertEquals("Expected two hits on page", 2, results.getResults().size());
+  }
+
+  @Test
+  public void searchResultsOffset() {
+    addInitialCustomersWithDups();
+
+    SearchResult<Customer> results = dao.findCustomers(SearchFilter.blank(), 2, 1);
+    assertEquals(3, results.getTotalCount());
+    assertEquals(1, results.getResults().size());
+    assertEquals("Ramirez", results.getResults().get(0).getLastName());
+  }
+
+  @Test
+  public void searchResultsCap() {
+    addInitialCustomersWithDups();
+
+    SearchResult<Customer> results = dao.findCustomers(SearchFilter.lastName("Ramirez"), 0, 1);
+    assertEquals(2, results.getTotalCount());
+    assertEquals(1, results.getResults().size());
+  }
+
+  @Test
+  public void searchResultsSortedByLastName() {
+    addInitialCustomersWithDups();
+
+    SearchResult<Customer> results = dao.findCustomers(SearchFilter.blank(), 0, 10);
+    assertEquals("Doe", results.getResults().get(0).getLastName());
+    assertEquals("Ramirez", results.getResults().get(1).getLastName());
+    assertEquals("Ramirez", results.getResults().get(2).getLastName());
+  }
+
+  private void addInitialCustomersWithDups() {
+    Customer c1 = CommonTestUtils.makeCustomer(1, "Brandon", "Ramirez", "bsr@somefakedomain");
+    Customer c2 = CommonTestUtils.makeCustomer(2, "John", "Doe", "jdoe@localhost");
+    Customer c3 = CommonTestUtils.makeCustomer(3, "Brandon", "Ramirez", "bsr@somefakedomain");
+
+    testCustomers.put(c1.getCustomerId(), c1);
+    testCustomers.put(c2.getCustomerId(), c2);
+    testCustomers.put(c3.getCustomerId(), c3);
+  }
 }

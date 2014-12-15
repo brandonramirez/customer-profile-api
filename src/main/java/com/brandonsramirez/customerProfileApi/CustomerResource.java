@@ -36,7 +36,7 @@ public class CustomerResource {
       int id = getCustomerProfileService().createCustomer(newCustomer);
       newCustomer.setCustomerId(id);
       try {
-        return Response.created(new URI("/customers/" + id)).entity(newCustomer).build();
+        return Response.created(new URI("customers/" + id)).entity(newCustomer).build();
       }
       catch (URISyntaxException e) {
         throw new RuntimeException(e);

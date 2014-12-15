@@ -13,8 +13,8 @@ public class TestCustomerProfileService {
   @Before
   public void setUp() {
     this.service = CommonTestUtils.makeCustomerProfileService(
-      CommonTestUtils.makeCustomer(1, "Brandon", "Ramirez"),
-      CommonTestUtils.makeCustomer(2, "John", "Doe")
+      CommonTestUtils.makeCustomer(1, "Brandon", "Ramirez", "bsr@nobody.com"),
+      CommonTestUtils.makeCustomer(2, "John", "Doe", "john@doe")
     );
   }
 
@@ -136,6 +136,27 @@ public class TestCustomerProfileService {
   public void updatingCustomerWithoutLastNameThrowsException() {
     Customer revisedCustomer = CommonTestUtils.makeCustomer(2, "Batman", null);
     updateShouldFail(revisedCustomer, "Able to remove a user's last name.");
+  }
+
+  @Test
+  public void searchReturnsResultsForBlank() {
+    SearchResult<Customer> results = service.findCustomers(SearchFilter.blank(), 0, 10);
+    assertEquals(2, results.getTotalCount());
+    assertEquals(2, results.getResults().size());
+  }
+
+  @Test
+  public void searchReturnsResultsForName() {
+    SearchResult<Customer> results = service.findCustomersByName("Brandon", "Ramirez", 0, 10);
+    assertEquals(1, results.getTotalCount());
+    assertEquals(1, results.getResults().size());
+  }
+
+  @Test
+  public void searchReturnsResultsForEmail() {
+    SearchResult<Customer> results = service.findCustomersByEmail("john@doe", 0, 10);
+    assertEquals(1, results.getTotalCount());
+    assertEquals(1, results.getResults().size());
   }
 
   private void creationShouldFail(Customer c, String error) {

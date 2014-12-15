@@ -42,6 +42,18 @@ public class CustomerProfileService {
     dao.deleteCustomer(customerId);
   }
 
+  public SearchResult<Customer> findCustomers(SearchFilter criteria, int offset, int max) {
+    return dao.findCustomers(criteria, offset, max);
+  }
+
+  public SearchResult<Customer> findCustomersByName(String firstName, String lastName, int offset, int max) {
+    return dao.findCustomers(SearchFilter.name(firstName, lastName), offset, max);
+  }
+
+  public SearchResult<Customer> findCustomersByEmail(String email, int offset, int max) {
+    return dao.findCustomers(SearchFilter.email(email), offset, max);
+  }
+
   private static void validateCustomerProfile(Customer customer) throws InvalidCustomerProfileException {
     if (customer == null) {
       throw new InvalidCustomerProfileException("No customer specified.");

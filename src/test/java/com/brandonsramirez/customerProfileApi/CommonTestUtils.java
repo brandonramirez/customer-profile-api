@@ -12,10 +12,22 @@ public class CommonTestUtils {
     return c;
   }
 
+  static Customer makeCustomer(int customerId, String firstName, String lastName, String email) {
+    Customer c = makeCustomer(firstName, lastName, email);
+    c.setCustomerId(customerId);
+    return c;
+  }
+
   static Customer makeCustomer(String firstName, String lastName) {
     Customer c = new Customer();
     c.setFirstName(firstName);
     c.setLastName(lastName);
+    return c;
+  }
+
+  static Customer makeCustomer(String firstName, String lastName, String email) {
+    Customer c = makeCustomer(firstName, lastName);
+    c.setEmail(email);
     return c;
   }
 
