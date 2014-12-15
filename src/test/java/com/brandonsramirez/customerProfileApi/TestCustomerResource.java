@@ -27,6 +27,17 @@ public class TestCustomerResource {
   }
 
   @Test
+  public void listCustomersReturnsValidResponse() {
+    Response res = endpoint.listCustomers(0, 10, "Bruce", "Wayne", null);
+    assertNotNull(res);
+    assertEquals(Response.Status.OK.getStatusCode(), res.getStatus());
+
+    res = endpoint.listCustomers(0, 10, "Clark", "Kent", "superman@fortress");
+    assertNotNull(res);
+    assertEquals(Response.Status.OK.getStatusCode(), res.getStatus());
+  }
+
+  @Test
   public void getCustomerReturnsValidCustomer() {
     Response res = endpoint.getCustomer(1);
     assertNotNull("Unable to find known-good customer profile.", res);

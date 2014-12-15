@@ -19,6 +19,23 @@ public class CustomerResource {
   @Context ServletContext context;
 
   @GET
+  public Response listCustomers(
+    @QueryParam("offset") @DefaultValue("0") int offset,
+    @QueryParam("max") @DefaultValue("10") int max,
+    @QueryParam("firstName") String firstName,
+    @QueryParam("lastName") String lastName,
+    @QueryParam("email") String email)
+  {
+    SearchFilter filter = new SearchFilter();
+    filter.setFirstName(firstName);
+    filter.setLastName(lastName);
+    filter.setEmail(email);
+
+    SearchResult<Customer> customers = getCustomerProfileService().findCustomers(filter, offset, max);
+    return Response.ok().entity(customers).build();
+  }
+
+  @GET
   @Path("/{customerId}")
   public Response getCustomer(@PathParam("customerId") int customerId) {
     Customer c = getCustomerProfileService().getCustomerById(customerId);
