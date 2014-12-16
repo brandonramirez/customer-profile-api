@@ -1,5 +1,8 @@
 package com.brandonsramirez.customerProfileApi;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Very lightweight service layer so that the REST layer does not have to
  * talk directly to the DAO.  Validation lives here.
@@ -52,6 +55,18 @@ public class CustomerProfileService {
 
   public SearchResult<Customer> findCustomersByEmail(String email, int offset, int max) {
     return dao.findCustomers(SearchFilter.email(email), offset, max);
+  }
+
+  public Map<Integer, List<Customer>> findDuplicates() {
+    return dao.findDuplicates();
+  }
+
+  public List<Customer> findDuplicatesOfProfile(int customerId) {
+    return dao.findDuplicatesOfProfile(dao.getCustomer(customerId));
+  }
+
+  public List<Customer> findDuplicatesOfProfile(Customer customer) {
+    return dao.findDuplicatesOfProfile(customer);
   }
 
   private static void validateCustomerProfile(Customer customer) throws InvalidCustomerProfileException {
