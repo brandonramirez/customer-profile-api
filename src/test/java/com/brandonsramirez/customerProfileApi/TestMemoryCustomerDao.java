@@ -1,6 +1,7 @@
 package com.brandonsramirez.customerProfileApi;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
@@ -144,6 +145,68 @@ public class TestMemoryCustomerDao {
     assertEquals("Doe", results.getResults().get(0).getLastName());
     assertEquals("Ramirez", results.getResults().get(1).getLastName());
     assertEquals("Ramirez", results.getResults().get(2).getLastName());
+  }
+
+  @Test
+  public void duplicatesProperlyFlaggedAsSuch() {
+    int firstCustomerId = dao.createCustomer(CommonTestUtils.makeCustomer("Brandon", "Ramirez"));
+    int secondCustomerId = dao.createCustomer(CommonTestUtils.makeCustomer("The", "Batman"));
+    int thirdCustomerId = dao.createCustomer(CommonTestUtils.makeCustomer("Brandon", "Ramirez"));
+
+    Map<Integer, List<Customer>> duplicates = dao.findDuplicates();
+
+    assertTrue(duplicates.containsKey(firstCustomerId));
+    assertTrue(duplicates.containsKey(thirdCustomerId));
+
+    List<Customer> dupsOfProfile1 = duplicates.get(firstCustomerId);
+    List<Customer> dupsOfProfile3 = duplicates.get(thirdCustomerId);
+
+    assertEquals(1, dupsOfProfile1.size());
+    assertEquals(1, dupsOfProfile3.size());
+
+    assertEquals(thirdCustomerId, dupsOfProfile1.get(0).getCustomerId());
+    assertEquals(firstCustomerId, dupsOfProfile3.get(0).getCustomerId());
+  }
+
+  @Test
+  public void nonDuplicatesFlaggedAsSuch() {
+    int firstCustomerId = dao.createCustomer(CommonTestUtils.makeCustomer("Brandon", "Ramirez"));
+    int secondCustomerId = dao.createCustomer(CommonTestUtils.makeCustomer("The", "Batman"));
+    int thirdCustomerId = dao.createCustomer(CommonTestUtils.makeCustomer("Brandon", "Ramirez"));
+
+    Map<Integer, List<Customer>> duplicates = dao.findDuplicates();
+
+    assertTrue(duplicates.containsKey(secondCustomerId));
+    List<Customer> dupsOfProfile2 = duplicates.get(secondCustomerId);
+    assertEquals(0, dupsOfProfile2.size());
+  }
+
+  @Test
+  public void deletingRemovesDuplicate() {
+    int firstCustomerId = dao.createCustomer(CommonTestUtils.makeCustomer("Brandon", "Ramirez"));
+    int secondCustomerId = dao.createCustomer(CommonTestUtils.makeCustomer("The", "Batman"));
+    int thirdCustomerId = dao.createCustomer(CommonTestUtils.makeCustomer("Brandon", "Ramirez"));
+
+    List<Customer> duplicates = dao.findDuplicatesOfProfile(dao.getCustomer(firstCustomerId));
+    assertEquals(1, duplicates.size());
+
+    dao.deleteCustomer(thirdCustomerId);
+
+    duplicates = dao.findDuplicatesOfProfile(dao.getCustomer(firstCustomerId));
+    assertEquals(0, duplicates.size());
+  }
+
+  @Test
+  public void updatingRecalculatesDuplicates() {
+    int firstCustomerId = dao.createCustomer(CommonTestUtils.makeCustomer("Brandon", "Ramirez"));
+    int secondCustomerId = dao.createCustomer(CommonTestUtils.makeCustomer("The", "Batman"));
+    int thirdCustomerId = dao.createCustomer(CommonTestUtils.makeCustomer("Brandon", "Ramirez"));
+
+    Customer revised = CommonTestUtils.makeCustomer(3, "The", "Batman");
+    dao.updateCustomer(revised);
+
+    assertEquals(0, dao.findDuplicatesOfProfile(dao.getCustomer(firstCustomerId)).size());
+    assertEquals(thirdCustomerId, dao.findDuplicatesOfProfile(dao.getCustomer(secondCustomerId)).get(0).getCustomerId());
   }
 
   private void addInitialCustomersWithDups() {
