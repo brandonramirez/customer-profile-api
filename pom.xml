@@ -60,10 +60,29 @@
             <!-- artifactId>jersey-container-servlet</artifactId -->
         </dependency>
         <!-- uncomment this to get JSON support -->
-        <dependency>
+        <!-- Moxy can't unmarshall a collection of objects.  It just `toString`s the elements. -->
+        <!--<dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-moxy</artifactId>
-        </dependency>
+        </dependency>-->
+        <!-- Provides JSON marshalling/unmarshalling for JAX-RS. -->
+           <dependency>
+             <groupId>com.owlike</groupId>
+             <artifactId>genson</artifactId>
+             <version>1.1</version>
+             <scope>runtime</scope>
+           </dependency>
+           <dependency>
+               <groupId>org.glassfish.jersey.media</groupId>
+               <artifactId>jersey-media-json-jackson</artifactId>
+               <version>2.8</version>
+           </dependency>
+           <!-- Work-around for a bug in Jersey: http://stackoverflow.com/questions/26307772/jersey-rest-error-messagebodywriter-not-found-for-media-type-application-json -->
+           <dependency>
+             <groupId>org.glassfish.jersey.ext</groupId>
+             <artifactId>jersey-metainf-services</artifactId>
+             <version>2.14</version>
+           </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
             <!-- if your container implements Servlet API older than 3.0, use "jersey-container-servlet-core"  -->

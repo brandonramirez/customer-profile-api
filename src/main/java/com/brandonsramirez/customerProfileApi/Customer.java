@@ -10,6 +10,8 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString(includeFieldNames=true)
 public class Customer implements Serializable, Cloneable {
+  private static final long serialVersionUID = 1L;
+
   @Getter @Setter private int customerId;
   @Getter @Setter private String firstName;
   @Getter @Setter private String lastName;
