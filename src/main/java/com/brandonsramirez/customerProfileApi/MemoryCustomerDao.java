@@ -98,7 +98,7 @@ public class MemoryCustomerDao implements CustomerDao {
     }
 
     potentialDups.remove(customer);
-    return potentialDups;
+    return Collections.unmodifiableList(potentialDups);
   }
 
   protected Map<Integer, Customer> getCustomerMap() {
